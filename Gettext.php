@@ -175,7 +175,7 @@ class Gettext extends Nette\Object implements IEditable
 	{
 		$f = @fopen($file, 'rb');
 		if (@filesize($file) < 10)
-			\InvalidArgumentException("'$file' is not a gettext file.");
+			throw new \InvalidArgumentException("'$file' is not a gettext file.");
 
 		$endian = FALSE;
 		$read = function($bytes) use ($f, $endian)
