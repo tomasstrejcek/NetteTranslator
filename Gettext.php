@@ -114,7 +114,7 @@ class Gettext extends Nette\Object implements IEditable
 	 * Adds a file to parse
 	 * @param string
 	 * @param string
-	 * @return void
+	 * @return NetteTranslator\Gettext (supports fluent interface)
 	 */
 	public function addFile($dir, $identifier)
 	{
@@ -129,6 +129,8 @@ class Gettext extends Nette\Object implements IEditable
 			$this->files[$identifier] = $dir;
 		else
 			throw new \InvalidArgumentException("Directory '$dir' doesn't exist.");
+		
+		return $this;
 	}
 
 
@@ -175,7 +177,7 @@ class Gettext extends Nette\Object implements IEditable
 	{
 		$f = @fopen($file, 'rb');
 		if (@filesize($file) < 10)
-			\InvalidArgumentException("'$file' is not a gettext file.");
+			throw new \InvalidArgumentException("'$file' is not a gettext file.");
 
 		$endian = FALSE;
 		$read = function($bytes) use ($f, $endian)
@@ -603,6 +605,7 @@ class Gettext extends Nette\Object implements IEditable
 
 	/**
 	 * Sets a new language
+	 * @return NetteTranslator\Gettext (supports fluent interface)
 	 */
 	public function setLang($lang)
 	{
@@ -615,5 +618,7 @@ class Gettext extends Nette\Object implements IEditable
 
 		// Lazy load
 		// $this->loadDictonary();
+
+		return $this;
 	}
 }
