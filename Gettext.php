@@ -526,6 +526,8 @@ class Gettext extends Nette\Object implements IEditable
 					$po .= 'msgid "'.str_replace(array('"', "'"), array('\"', "\\'"), current($original)).'"'."\n";
 					if (count($original) > 1)
 						$po .= 'msgid_plural "'.str_replace(array('"', "'"), array('\"', "\\'"), end($original)).'"'."\n";
+
+					$po .= "msgstr \"\"\n";
 					$po .= "\n";
 				}
 			}
