@@ -71,7 +71,7 @@ class Gettext extends Nette\Object implements IEditable
 	/** @var bool */
 	public static $cacheMode = self::CACHE_DISABLE;
 
-	/** @var Nette\DI\IContainer */
+	/** @var Nette\DI\Container */
 	protected $container;
 
 	/** @var Nette\Http\Session */
@@ -87,7 +87,7 @@ class Gettext extends Nette\Object implements IEditable
 	 * @param array $files
 	 * @param string $lang
 	 */
-	public function __construct(Nette\DI\IContainer $container, array $files = NULL, $lang = NULL)
+	public function __construct(Nette\DI\Container $container, array $files = NULL, $lang = NULL)
 	{
 		$this->container = $container;
 		$this->session = $storage = $container->session->getSection(static::SESSION_NAMESPACE);
@@ -526,6 +526,8 @@ class Gettext extends Nette\Object implements IEditable
 					$po .= 'msgid "'.str_replace(array('"', "'"), array('\"', "\\'"), current($original)).'"'."\n";
 					if (count($original) > 1)
 						$po .= 'msgid_plural "'.str_replace(array('"', "'"), array('\"', "\\'"), end($original)).'"'."\n";
+
+					$po .= "msgstr \"\"\n";
 					$po .= "\n";
 				}
 			}
@@ -585,11 +587,11 @@ class Gettext extends Nette\Object implements IEditable
 	/**
 	 * Get translator
 	 *
-	 * @param Nette\DI\IContainer $container
+	 * @param Nette\DI\Container $container
 	 * @param array|Nette\ArrayHash $options
 	 * @return NetteTranslator\Gettext
 	 */
-	public static function getTranslator(Nette\DI\IContainer $container, $options = NULL)
+	public static function getTranslator(Nette\DI\Container $container, $options = NULL)
 	{
 		return new static($container, isset($options['files']) ? (array) $options['files'] : NULL);
 	}
