@@ -39,6 +39,7 @@ use Nette,
  * @author	   Miroslav Smetana
  * @author	   Patrik Votoček <patrik@votocek.cz>
  * @author	   Vaclav Vrbka <gmvasek@php-info.cz>
+ * @author	   Josef Kufner <jk@frozen-doe.net>
  * @copyright  Copyright (c) 2009 Roman Sklenář (http://romansklenar.cz)
  * @license    New BSD License
  * @example    http://addons.nettephp.com/gettext-translator
@@ -469,7 +470,7 @@ class Gettext extends Nette\Object implements IEditable
 			$result[] = "Content-Transfer-Encoding: 8bit";
 
 		// creation fix - enables all 3 forms
-		$result[] = "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4 ? 1 : 2));\n";
+		$result[] = "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4 ? 1 : 2));";
 		/*
 		if (isset($this->metadata[$identifier]['Plural-Forms']))
 			$result[] = "Plural-Forms: ".$this->metadata[$identifier]['Plural-Forms'];
@@ -503,17 +504,17 @@ class Gettext extends Nette\Object implements IEditable
 			if($data['file'] !== $identifier)
 				continue;
 
-			$po .= 'msgid "'.str_replace(array('"', "'"), array('\"', "\\'"), $message).'"'."\n";
+			$po .= 'msgid "'.str_replace(array('"'), array('\"'), $message).'"'."\n";
 			if (is_array($data['original']) && count($data['original']) > 1)
-				$po .= 'msgid_plural "'.str_replace(array('"', "'"), array('\"', "\\'"), end($data['original'])).'"'."\n";
+				$po .= 'msgid_plural "'.str_replace(array('"'), array('\"'), end($data['original'])).'"'."\n";
 			if (!is_array($data['translation']))
-				$po .= 'msgstr "'.str_replace(array('"', "'"), array('\"', "\\'"), $data['translation']).'"'."\n";
+				$po .= 'msgstr "'.str_replace(array('"'), array('\"'), $data['translation']).'"'."\n";
 			elseif (count($data['translation']) < 2)
-				$po .= 'msgstr "'.str_replace(array('"', "'"), array('\"', "\\'"), current($data['translation'])).'"'."\n";
+				$po .= 'msgstr "'.str_replace(array('"'), array('\"'), current($data['translation'])).'"'."\n";
 			else {
 				$i = 0;
 				foreach ($data['translation'] as $string) {
-					$po .= 'msgstr['.$i.'] "'.str_replace(array('"', "'"), array('\"', "\\'"), $string).'"'."\n";
+					$po .= 'msgstr['.$i.'] "'.str_replace(array('"'), array('\"'), $string).'"'."\n";
 					$i++;
 				}
 			}
@@ -524,9 +525,9 @@ class Gettext extends Nette\Object implements IEditable
 		if (isset($storage->newStrings[$this->lang])) {
 			foreach ($storage->newStrings[$this->lang] as $original) {
 				if (trim(current($original)) != "" && !\array_key_exists(current($original), $this->dictionary)) {
-					$po .= 'msgid "'.str_replace(array('"', "'"), array('\"', "\\'"), current($original)).'"'."\n";
+					$po .= 'msgid "'.str_replace(array('"'), array('\"'), current($original)).'"'."\n";
 					if (count($original) > 1)
-						$po .= 'msgid_plural "'.str_replace(array('"', "'"), array('\"', "\\'"), end($original)).'"'."\n";
+						$po .= 'msgid_plural "'.str_replace(array('"'), array('\"'), end($original)).'"'."\n";
 
 					$po .= "msgstr \"\"\n";
 					$po .= "\n";
