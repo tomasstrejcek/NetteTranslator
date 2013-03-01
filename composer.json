@@ -1,0 +1,19 @@
+{
+	"name": "Schmutzka/NetteTranslator",
+	"description": "Simple translator for Nette (PHP framework).",
+	"keywords": ["nette", "translator"],
+	"homepage": "http://pla.nette.org/cs/zprovozneni-prekladace-nettetranslator",
+	"authors": [
+		{
+			"name": "Patrik Votoček",
+			"homepage": "http://patrik.votocek.cz"
+		}
+		{
+			"name": "Tomáš Votruba",
+			"homepage": "http://www.sleeper.cz/"
+		}
+	],
+	"autoload": {
+		"classmap": ["NetteTranslator/"]
+	}
+}
