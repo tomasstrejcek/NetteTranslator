@@ -1,5 +1,5 @@
 {
-	"name": "Schmutzka/NetteTranslator",
+	"name": "schmutzka/nettetranslator",
 	"description": "Simple translator for Nette (PHP framework).",
 	"keywords": ["nette", "translator"],
 	"homepage": "http://pla.nette.org/cs/zprovozneni-prekladace-nettetranslator",
