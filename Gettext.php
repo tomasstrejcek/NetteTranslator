@@ -226,11 +226,11 @@ class Gettext extends Nette\Object implements IEditable
 					continue;
 				}
 
-				$original = explode(Strings::chr(0x00), $original);
-				$translation = explode(Strings::chr(0x00), $translation);
-				$this->dictionary[is_array($original) ? $original[0] : $original]['original'] = $original;
-				$this->dictionary[is_array($original) ? $original[0] : $original]['translation'] = $translation;
-				$this->dictionary[is_array($original) ? $original[0] : $original]['file'] = $identifier;
+				$original = explode("\0", $original);
+				$translation = explode("\0", $translation);
+				$this->dictionary[isset($original[0]) ? $original[0] : $original]['original'] = $original;
+				$this->dictionary[isset($original[0]) ? $original[0] : $original]['translation'] = $translation;
+				$this->dictionary[isset($original[0]) ? $original[0] : $original]['file'] = $identifier;
 			}
 		}
 	}
