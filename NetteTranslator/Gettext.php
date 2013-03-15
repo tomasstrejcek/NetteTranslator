@@ -28,18 +28,17 @@ namespace NetteTranslator;
 
 require_once __DIR__ . '/shortcuts.php';
 
-use Nette,
-	Nette\Utils\Strings;
+use Nette, Nette\Utils\Strings;
 
 /**
  * Gettext translator.
  * This solution is partitionaly based on Zend_Translate_Adapter_Gettext (c) Zend Technologies USA Inc. (http://www.zend.com), new BSD license
  *
  * @author     Roman Sklenář
- * @author	   Miroslav Smetana
- * @author	   Patrik Votoček <patrik@votocek.cz>
- * @author	   Vaclav Vrbka <gmvasek@php-info.cz>
- * @author	   Josef Kufner <jk@frozen-doe.net>
+ * @author       Miroslav Smetana
+ * @author       Patrik Votoček <patrik@votocek.cz>
+ * @author       Vaclav Vrbka <gmvasek@php-info.cz>
+ * @author       Josef Kufner <jk@frozen-doe.net>
  * @copyright  Copyright (c) 2009 Roman Sklenář (http://romansklenar.cz)
  * @license    New BSD License
  * @example    http://addons.nettephp.com/gettext-translator
@@ -102,8 +101,8 @@ class Gettext extends Nette\Object implements IEditable
 		$this->cache = new Nette\Caching\Cache($cacheStorage, static::SESSION_NAMESPACE);
 		$this->httpResponse = $httpResponse;
 
-		if(!isset($storage->newStrings) || !is_array($storage->newStrings)) {
-				$storage->newStrings = array();
+		if (!isset($storage->newStrings) || !is_array($storage->newStrings)) {
+			$storage->newStrings = array();
 		}
 	}
 
@@ -117,14 +116,16 @@ class Gettext extends Nette\Object implements IEditable
 	public function addFile($dir, $identifier)
 	{
 
-		if(isset($this->files[$identifier]))
+		if (isset($this->files[$identifier])) {
 			throw new \InvalidArgumentException("Language file identified '$identifier' is already registered.");
+		}
 
 
-		if(is_dir($dir))
-			$this->files[$identifier] = $dir;
-		else
-			throw new \InvalidArgumentException("Directory '$dir' doesn't exist.");
+		if (is_dir($dir))
+			$this->files[$identifier] = $dir; else
+				{
+					throw new \InvalidArgumentException("Directory '$dir' doesn't exist.");
+				}
 
 		return $this;
 	}
@@ -136,13 +137,12 @@ class Gettext extends Nette\Object implements IEditable
 	protected function loadDictonary()
 	{
 		if (!$this->loaded) {
-			if(empty($this->files))
+			if (empty($this->files))
 				throw new Nette\InvalidStateException("Language file(s) must be defined.");
 
 			$cache = $this->cache;
-			if (static::$cacheMode && isset($cache['dictionary-'.$this->lang]))
-				$this->dictionary = $cache['dictionary-'.$this->lang];
-			else {
+			if (static::$cacheMode && isset($cache['dictionary-' . $this->lang]))
+				$this->dictionary = $cache['dictionary-' . $this->lang]; else {
 				$files = array();
 				foreach ($this->files as $identifier => $dir) {
 					$path = "$dir/$this->lang.$identifier.mo";
@@ -153,11 +153,7 @@ class Gettext extends Nette\Object implements IEditable
 				}
 
 				if (static::$cacheMode) {
-					$cache->save('dictionary-'.$this->lang, $this->dictionary, array(
-						'expire' => time() * 60 * 60 * 2,
-						'files' => $files,
-						'tags' => array('dictionary-'.$this->lang)
-					));
+					$cache->save('dictionary-' . $this->lang, $this->dictionary, array('expire' => time() * 60 * 60 * 2, 'files' => $files, 'tags' => array('dictionary-' . $this->lang)));
 				}
 			}
 			$this->loaded = TRUE;
@@ -176,18 +172,15 @@ class Gettext extends Nette\Object implements IEditable
 			throw new \InvalidArgumentException("'$file' is not a gettext file.");
 
 		$endian = FALSE;
-		$read = function($bytes) use ($f, $endian)
-		{
+		$read = function ($bytes) use ($f, $endian) {
 			$data = fread($f, 4 * $bytes);
-			return $endian === FALSE ? unpack('V'.$bytes, $data) : unpack('N'.$bytes, $data);
+			return $endian === FALSE ? unpack('V' . $bytes, $data) : unpack('N' . $bytes, $data);
 		};
 
 		$input = $read(1);
 		if (Strings::lower(substr(dechex($input[1]), -8)) == "950412de")
-			$endian = FALSE;
-		elseif (Strings::lower(substr(dechex($input[1]), -8)) == "de120495")
-			$endian = TRUE;
-		else
+			$endian = FALSE; elseif (Strings::lower(substr(dechex($input[1]), -8)) == "de120495")
+			$endian = TRUE; else
 			throw new \InvalidArgumentException("'$file' is not a gettext file.");
 
 		$input = $read(1);
@@ -259,18 +252,18 @@ class Gettext extends Nette\Object implements IEditable
 		$this->loadDictonary();
 		$files = array_keys($this->files);
 
-		$message = (string) $message;
+		$message = (string)$message;
 		$message_plural = NULL;
 		if (is_array($form) && $form !== NULL) {
 			$message_plural = current($form);
-			$form = (int) end($form);
+			$form = (int)end($form);
 		}
 		if (!is_int($form) || $form === NULL) {
 			$form = 1;
 		}
 
 		if (!empty($message) && isset($this->dictionary[$message])) {
-			$tmp = preg_replace('/([a-z]+)/', '$$1', "n=$form;".$this->metadata[$files[0]]['Plural-Forms']);
+			$tmp = preg_replace('/([a-z]+)/', '$$1', "n=$form;" . $this->metadata[$files[0]]['Plural-Forms']);
 			eval($tmp);
 
 
@@ -348,7 +341,7 @@ class Gettext extends Nette\Object implements IEditable
 
 		foreach ($this->dictionary as $original => $data) {
 			if (trim($original) != "") {
-				if($file && $data['file'] === $file) {
+				if ($file && $data['file'] === $file) {
 					$result[$original] = $data['translation'];
 				} else {
 					$result[$data['file']][$original] = $data['translation'];
@@ -357,12 +350,11 @@ class Gettext extends Nette\Object implements IEditable
 		}
 
 
-		if($file) {
+		if ($file) {
 			return array_merge($newStrings, $result);
 		} else {
-			foreach($this->getFiles() as $identifier => $path)
-			{
-				if(!isset($result[$identifier]))
+			foreach ($this->getFiles() as $identifier => $path) {
+				if (!isset($result[$identifier]))
 					$result[$identifier] = array();
 			}
 
@@ -396,8 +388,8 @@ class Gettext extends Nette\Object implements IEditable
 		if (isset($space->newStrings[$this->lang]) && array_key_exists($message, $space->newStrings[$this->lang]))
 			$message = $space->newStrings[$this->lang][$message];
 
-		$this->dictionary[is_array($message) ? $message[0] : $message]['original'] = (array) $message;
-		$this->dictionary[is_array($message) ? $message[0] : $message]['translation'] = (array) $string;
+		$this->dictionary[is_array($message) ? $message[0] : $message]['original'] = (array)$message;
+		$this->dictionary[is_array($message) ? $message[0] : $message]['translation'] = (array)$string;
 		$this->dictionary[is_array($message) ? $message[0] : $message]['file'] = $file;
 	}
 
@@ -406,10 +398,10 @@ class Gettext extends Nette\Object implements IEditable
 	 */
 	public function save($file)
 	{
-		if(!$this->loaded)
+		if (!$this->loaded)
 			throw new Nette\InvalidStateException("Nothing to save, translations are not loaded.");
 
-		if(!isset($this->files[$file]))
+		if (!isset($this->files[$file]))
 			throw new \InvalidArgumentException("Gettext file identified as '$file' does not exist.");
 
 		$dir = $this->files[$file];
@@ -423,8 +415,7 @@ class Gettext extends Nette\Object implements IEditable
 			unset($storage->newStrings[$this->lang]);
 		}
 		if (static::$cacheMode) {
-			$cache = $this->cache
-				->clean(array(\Nette\Caching\Cache::TAGS => 'dictionary-'.$this->lang));
+			$cache = $this->cache->clean(array(\Nette\Caching\Cache::TAGS => 'dictionary-' . $this->lang));
 		}
 	}
 
@@ -437,31 +428,25 @@ class Gettext extends Nette\Object implements IEditable
 	{
 		$result = array();
 		if (isset($this->metadata[$identifier]['Project-Id-Version']))
-			$result[] = "Project-Id-Version: ".$this->metadata[$identifier]['Project-Id-Version'];
-		else
+			$result[] = "Project-Id-Version: " . $this->metadata[$identifier]['Project-Id-Version']; else
 			$result[] = "Project-Id-Version: ";
 		if (isset($this->metadata[$identifier]['Report-Msgid-Bugs-To']))
-			$result[] = "Report-Msgid-Bugs-To: ".$this->metadata[$identifier]['Report-Msgid-Bugs-To'];
+			$result[] = "Report-Msgid-Bugs-To: " . $this->metadata[$identifier]['Report-Msgid-Bugs-To'];
 		if (isset($this->metadata[$identifier]['POT-Creation-Date']))
-			$result[] = "POT-Creation-Date: ".$this->metadata[$identifier]['POT-Creation-Date'];
-		else
+			$result[] = "POT-Creation-Date: " . $this->metadata[$identifier]['POT-Creation-Date']; else
 			$result[] = "POT-Creation-Date: ";
-		$result[] = "PO-Revision-Date: ".date("Y-m-d H:iO");
+		$result[] = "PO-Revision-Date: " . date("Y-m-d H:iO");
 		if (isset($this->metadata[$identifier]['Last-Translator']))
-			$result[] = "Language-Team: ".$this->metadata[$identifier]['Language-Team'];
-		else
+			$result[] = "Language-Team: " . $this->metadata[$identifier]['Language-Team']; else
 			$result[] = "Language-Team: ";
 		if (isset($this->metadata[$identifier]['MIME-Version']))
-			$result[] = "MIME-Version: ".$this->metadata[$identifier]['MIME-Version'];
-		else
+			$result[] = "MIME-Version: " . $this->metadata[$identifier]['MIME-Version']; else
 			$result[] = "MIME-Version: 1.0";
 		if (isset($this->metadata[$identifier]['Content-Type']))
-			$result[] = "Content-Type: ".$this->metadata[$identifier]['Content-Type'];
-		else
+			$result[] = "Content-Type: " . $this->metadata[$identifier]['Content-Type']; else
 			$result[] = "Content-Type: text/plain; charset=UTF-8";
 		if (isset($this->metadata[$identifier]['Content-Transfer-Encoding']))
-			$result[] = "Content-Transfer-Encoding: ".$this->metadata[$identifier]['Content-Transfer-Encoding'];
-		else
+			$result[] = "Content-Transfer-Encoding: " . $this->metadata[$identifier]['Content-Transfer-Encoding']; else
 			$result[] = "Content-Transfer-Encoding: 8bit";
 
 		// creation fix - enables all 3 forms
@@ -474,13 +459,13 @@ class Gettext extends Nette\Object implements IEditable
 		*/
 
 		if (isset($this->metadata[$identifier]['X-Poedit-Language']))
-			$result[] = "X-Poedit-Language: ".$this->metadata[$identifier]['X-Poedit-Language'];
+			$result[] = "X-Poedit-Language: " . $this->metadata[$identifier]['X-Poedit-Language'];
 		if (isset($this->metadata[$identifier]['X-Poedit-Country']))
-			$result[] = "X-Poedit-Country: ".$this->metadata[$identifier]['X-Poedit-Country'];
+			$result[] = "X-Poedit-Country: " . $this->metadata[$identifier]['X-Poedit-Country'];
 		if (isset($this->metadata[$identifier]['X-Poedit-SourceCharset']))
-			$result[] = "X-Poedit-SourceCharset: ".$this->metadata[$identifier]['X-Poedit-SourceCharset'];
+			$result[] = "X-Poedit-SourceCharset: " . $this->metadata[$identifier]['X-Poedit-SourceCharset'];
 		if (isset($this->metadata[$identifier]['X-Poedit-KeywordsList']))
-			$result[] = "X-Poedit-KeywordsList: ".$this->metadata[$identifier]['X-Poedit-KeywordsList'];
+			$result[] = "X-Poedit-KeywordsList: " . $this->metadata[$identifier]['X-Poedit-KeywordsList'];
 
 		return $result;
 	}
@@ -492,24 +477,21 @@ class Gettext extends Nette\Object implements IEditable
 	 */
 	private function buildPOFile($file, $identifier)
 	{
-		$po = "# Gettext keys exported by GettextTranslator and Translation Panel\n"
-			."# Created: ".date('Y-m-d H:i:s')."\n".'msgid ""'."\n".'msgstr ""'."\n";
-		$po .= '"'.implode('\n"'."\n".'"', $this->generateMetadata($identifier)).'\n"'."\n\n\n";
+		$po = "# Gettext keys exported by GettextTranslator and Translation Panel\n" . "# Created: " . date('Y-m-d H:i:s') . "\n" . 'msgid ""' . "\n" . 'msgstr ""' . "\n";
+		$po .= '"' . implode('\n"' . "\n" . '"', $this->generateMetadata($identifier)) . '\n"' . "\n\n\n";
 		foreach ($this->dictionary as $message => $data) {
-			if($data['file'] !== $identifier)
+			if ($data['file'] !== $identifier)
 				continue;
 
-			$po .= 'msgid "'.str_replace(array('"'), array('\"'), $message).'"'."\n";
+			$po .= 'msgid "' . str_replace(array('"'), array('\"'), $message) . '"' . "\n";
 			if (is_array($data['original']) && count($data['original']) > 1)
-				$po .= 'msgid_plural "'.str_replace(array('"'), array('\"'), end($data['original'])).'"'."\n";
+				$po .= 'msgid_plural "' . str_replace(array('"'), array('\"'), end($data['original'])) . '"' . "\n";
 			if (!is_array($data['translation']))
-				$po .= 'msgstr "'.str_replace(array('"'), array('\"'), $data['translation']).'"'."\n";
-			elseif (count($data['translation']) < 2)
-				$po .= 'msgstr "'.str_replace(array('"'), array('\"'), current($data['translation'])).'"'."\n";
-			else {
+				$po .= 'msgstr "' . str_replace(array('"'), array('\"'), $data['translation']) . '"' . "\n"; elseif (count($data['translation']) < 2)
+				$po .= 'msgstr "' . str_replace(array('"'), array('\"'), current($data['translation'])) . '"' . "\n"; else {
 				$i = 0;
 				foreach ($data['translation'] as $string) {
-					$po .= 'msgstr['.$i.'] "'.str_replace(array('"'), array('\"'), $string).'"'."\n";
+					$po .= 'msgstr[' . $i . '] "' . str_replace(array('"'), array('\"'), $string) . '"' . "\n";
 					$i++;
 				}
 			}
@@ -520,9 +502,9 @@ class Gettext extends Nette\Object implements IEditable
 		if (isset($storage->newStrings[$this->lang])) {
 			foreach ($storage->newStrings[$this->lang] as $original) {
 				if (trim(current($original)) != "" && !\array_key_exists(current($original), $this->dictionary)) {
-					$po .= 'msgid "'.str_replace(array('"'), array('\"'), current($original)).'"'."\n";
+					$po .= 'msgid "' . str_replace(array('"'), array('\"'), current($original)) . '"' . "\n";
 					if (count($original) > 1)
-						$po .= 'msgid_plural "'.str_replace(array('"'), array('\"'), end($original)).'"'."\n";
+						$po .= 'msgid_plural "' . str_replace(array('"'), array('\"'), end($original)) . '"' . "\n";
 
 					$po .= "msgstr \"\"\n";
 					$po .= "\n";
@@ -540,7 +522,7 @@ class Gettext extends Nette\Object implements IEditable
 	 */
 	private function buildMOFile($file, $identifier)
 	{
-		$dictionary = array_filter($this->dictionary, function($data) use($identifier) {
+		$dictionary = array_filter($this->dictionary, function ($data) use ($identifier) {
 			return $data['file'] === $identifier;
 		});
 
@@ -549,21 +531,21 @@ class Gettext extends Nette\Object implements IEditable
 		$metadata = implode("\n", $this->generateMetadata($identifier));
 		$items = count($dictionary) + 1;
 		$ids = Strings::chr(0x00);
-		$strings = $metadata.Strings::chr(0x00);
+		$strings = $metadata . Strings::chr(0x00);
 		$idsOffsets = array(0, 28 + $items * 16);
 		$stringsOffsets = array(array(0, strlen($metadata)));
 
 		foreach ($dictionary as $key => $value) {
 			$id = $key;
 			if (is_array($value['original']) && count($value['original']) > 1)
-				$id .= Strings::chr(0x00).end($value['original']);
+				$id .= Strings::chr(0x00) . end($value['original']);
 
 			$string = implode(Strings::chr(0x00), $value['translation']);
 			$idsOffsets[] = strlen($id);
 			$idsOffsets[] = strlen($ids) + 28 + $items * 16;
 			$stringsOffsets[] = array(strlen($strings), strlen($string));
-			$ids .= $id.Strings::chr(0x00);
-			$strings .= $string.Strings::chr(0x00);
+			$ids .= $id . Strings::chr(0x00);
+			$strings .= $string . Strings::chr(0x00);
 		}
 
 		$valuesOffsets = array();
@@ -572,13 +554,14 @@ class Gettext extends Nette\Object implements IEditable
 			$valuesOffsets[] = $one;
 			$valuesOffsets[] = $all + strlen($ids) + 28 + $items * 16;
 		}
-		$offsets= array_merge($idsOffsets, $valuesOffsets);
+		$offsets = array_merge($idsOffsets, $valuesOffsets);
 
 		$mo = pack('Iiiiiii', 0x950412de, 0, $items, 28, 28 + $items * 8, 0, 28 + $items * 16);
-		foreach ($offsets as $offset)
+		foreach ($offsets as $offset) {
 			$mo .= pack('i', $offset);
+		}
 
-		file_put_contents($file, $mo.$ids.$strings);
+		file_put_contents($file, $mo . $ids . $strings);
 	}
 
 	/**
@@ -586,8 +569,9 @@ class Gettext extends Nette\Object implements IEditable
 	 */
 	public function getLang()
 	{
-		if (empty($this->lang))
+		if (empty($this->lang)) {
 			throw new Nette\InvalidStateException('Language must be defined.');
+		}
 		return $this->lang;
 	}
 
@@ -597,7 +581,7 @@ class Gettext extends Nette\Object implements IEditable
 	 */
 	public function setLang($lang)
 	{
-		if($this->lang === $lang) {
+		if ($this->lang === $lang) {
 			return;
 		}
 
