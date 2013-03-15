@@ -85,7 +85,8 @@ class Gettext extends Nette\Object implements IEditable
 	/**
 	 * @param bool $mode
 	 */
-	public function enableCache(bool $mode = self::CACHE_DISABLE) {
+	public function enableCache(bool $mode = self::CACHE_DISABLE)
+	{
 		$this->cacheMode = $mode;
 	}
 
@@ -101,8 +102,9 @@ class Gettext extends Nette\Object implements IEditable
 		$this->cache = new Nette\Caching\Cache($cacheStorage, static::SESSION_NAMESPACE);
 		$this->httpResponse = $httpResponse;
 
-		if(!isset($storage->newStrings) || !is_array($storage->newStrings))
+		if(!isset($storage->newStrings) || !is_array($storage->newStrings)) {
 				$storage->newStrings = array();
+		}
 	}
 
 
@@ -595,8 +597,9 @@ class Gettext extends Nette\Object implements IEditable
 	 */
 	public function setLang($lang)
 	{
-		if($this->lang === $lang)
+		if($this->lang === $lang) {
 			return;
+		}
 
 		$this->lang = $lang;
 		$this->dictionary = array();
