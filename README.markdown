@@ -7,3 +7,13 @@ This is short manual how to use Nette Translator in the newest Nette 2.0 in its 
 No need to edit or operate with .po/.mo files required.
 
 Actual info and manual: http://wiki.nette.org/cs/cookbook/zprovozneni-prekladace-nettetranslator
+
+Config
+======
+    services:
+        translator:
+            class: NetteTranslator\Gettext
+            setup:
+                - setLang(%lang%)
+                - addFile(%appDir%/lang, front)
+                - NetteTranslator\Panel::register
