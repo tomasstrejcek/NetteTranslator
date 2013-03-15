@@ -70,10 +70,7 @@ class Gettext extends Nette\Object implements IEditable
 	private $loaded = FALSE;
 
 	/** @var bool */
-	public static $cacheMode = self::CACHE_DISABLE;
-
-	/** @var Nette\DI\Container */
-	protected $container;
+	public $cacheMode = self::CACHE_DISABLE;
 
 	/** @var Nette\Http\Session */
 	protected $session;
@@ -81,6 +78,16 @@ class Gettext extends Nette\Object implements IEditable
 	/** @var Nette\Caching\Cache */
 	protected $cache;
 
+	/** @var Nette\Http\Response */
+	private $httpResponse;
+
+
+	/**
+	 * @param bool $mode
+	 */
+	public function enableCache(bool $mode = self::CACHE_DISABLE) {
+		$this->cacheMode = $mode;
+	}
 
 	/**
 	 * Constructor
@@ -88,23 +95,11 @@ class Gettext extends Nette\Object implements IEditable
 	 * @param array $files
 	 * @param string $lang
 	 */
-	public function __construct(Nette\DI\Container $container, array $files = NULL, $lang = NULL)
+	public function __construct(Nette\Http\Session $session, Nette\Caching\Storages\FileStorage $cacheStorage, Nette\Http\Response $httpResponse)
 	{
-		$this->container = $container;
-		$this->session = $storage = $container->session->getSection(static::SESSION_NAMESPACE);
-		$this->cache = new Nette\Caching\Cache($container->cacheStorage, static::SESSION_NAMESPACE);
-
-		if (count($files) > 0) {
-			foreach($files as $identifier => $dir) {
-				$this->addFile($dir, $identifier);
-			}
-		}
-
-		if(empty($lang))
-			$lang = $container->params['lang'];
-		$this->lang = $lang;
-		if (empty($this->lang))
-			throw new Nette\InvalidStateException('Language must be defined.');
+		$this->session = $storage = $session->getSection(static::SESSION_NAMESPACE);
+		$this->cache = new Nette\Caching\Cache($cacheStorage, static::SESSION_NAMESPACE);
+		$this->httpResponse = $httpResponse;
 
 		if(!isset($storage->newStrings) || !is_array($storage->newStrings))
 				$storage->newStrings = array();
@@ -119,8 +114,6 @@ class Gettext extends Nette\Object implements IEditable
 	 */
 	public function addFile($dir, $identifier)
 	{
-		if(strpos($dir, '%') !== FALSE)
-			$dir = $this->container->expand($dir);
 
 		if(isset($this->files[$identifier]))
 			throw new \InvalidArgumentException("Language file identified '$identifier' is already registered.");
@@ -130,7 +123,7 @@ class Gettext extends Nette\Object implements IEditable
 			$this->files[$identifier] = $dir;
 		else
 			throw new \InvalidArgumentException("Directory '$dir' doesn't exist.");
-		
+
 		return $this;
 	}
 
@@ -283,7 +276,7 @@ class Gettext extends Nette\Object implements IEditable
 			if (!empty($message))
 				$message = (is_array($message) && $plural !== NULL && isset($message[$plural])) ? $message[$plural] : $message;
 		} else {
-			if (!$this->container->httpResponse->isSent() || $this->container->session->isStarted()) {
+			if (!$this->httpResponse->isSent() || $this->session->isStarted()) {
 				$space = $this->session;
 				if (!isset($space->newStrings[$this->lang]))
 					$space->newStrings[$this->lang] = array();
@@ -587,23 +580,12 @@ class Gettext extends Nette\Object implements IEditable
 	}
 
 	/**
-	 * Get translator
-	 *
-	 * @param Nette\DI\Container $container
-	 * @param array|Nette\ArrayHash $options
-	 * @return NetteTranslator\Gettext
-	 */
-	public static function getTranslator(Nette\DI\Container $container, $options = NULL)
-	{
-		return new static($container, isset($options['files']) ? (array) $options['files'] : NULL);
-	}
-
-
-	/**
 	 * Returns current language
 	 */
 	public function getLang()
 	{
+		if (empty($this->lang))
+			throw new Nette\InvalidStateException('Language must be defined.');
 		return $this->lang;
 	}
 
