@@ -35,10 +35,10 @@ use Nette, Nette\Utils\Strings;
  * This solution is partitionaly based on Zend_Translate_Adapter_Gettext (c) Zend Technologies USA Inc. (http://www.zend.com), new BSD license
  *
  * @author     Roman Sklenář
- * @author       Miroslav Smetana
- * @author       Patrik Votoček <patrik@votocek.cz>
- * @author       Vaclav Vrbka <gmvasek@php-info.cz>
- * @author       Josef Kufner <jk@frozen-doe.net>
+ * @author     Miroslav Smetana
+ * @author     Patrik Votoček <patrik@votocek.cz>
+ * @author     Vaclav Vrbka <gmvasek@php-info.cz>
+ * @author     Josef Kufner <jk@frozen-doe.net>
  * @copyright  Copyright (c) 2009 Roman Sklenář (http://romansklenar.cz)
  * @license    New BSD License
  * @example    http://addons.nettephp.com/gettext-translator
@@ -69,7 +69,7 @@ class Gettext extends Nette\Object implements IEditable
 	private $loaded = FALSE;
 
 	/** @var bool */
-	public $cacheMode = self::CACHE_DISABLE;
+	protected $cacheMode = self::CACHE_DISABLE;
 
 	/** @var Nette\Http\Session */
 	protected $session;
@@ -605,6 +605,7 @@ class Gettext extends Nette\Object implements IEditable
 	}
 
 	/**
+	 * Returns current language
 	 * @return string
 	 * @throws \Nette\InvalidStateException
 	 */
