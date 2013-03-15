@@ -106,12 +106,12 @@ class Gettext extends Nette\Object implements IEditable
 		}
 	}
 
-
 	/**
 	 * Adds a file to parse
-	 * @param string
-	 * @param string
-	 * @return NetteTranslator\Gettext (supports fluent interface)
+	 * @param string $dir
+	 * @param string $identifier
+	 * @return $this
+	 * @throws \InvalidArgumentException
 	 */
 	public function addFile($dir, $identifier)
 	{
@@ -605,7 +605,8 @@ class Gettext extends Nette\Object implements IEditable
 	}
 
 	/**
-	 * Returns current language
+	 * @return string
+	 * @throws \Nette\InvalidStateException
 	 */
 	public function getLang()
 	{
