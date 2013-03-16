@@ -15,7 +15,6 @@ class NetteTranslatorExtension extends \Nette\Config\CompilerExtension
 		'files'     => array()
 	);
 
-	/***/
 	public function loadConfiguration()
 	{
 		$config = $this->getConfig($this->defaults);

@@ -52,7 +52,7 @@ Basic usage + language change
     
     	// pokud není nastaven, použijeme defaultní z configu
     	if (!isset($this->lang)) {
-    		$this->lang = $this->context->parameters["lang"];
+    		$this->lang = $this->translator->getLang();
     	}
     
     	$this->translator->setLang($this->lang); // nastavíme jazyk
