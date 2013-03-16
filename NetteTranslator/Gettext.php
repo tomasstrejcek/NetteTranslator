@@ -82,14 +82,6 @@ class Gettext extends Nette\Object implements IEditable
 
 
 	/**
-	 * @param bool $mode
-	 */
-	public function enableCache(bool $mode = self::CACHE_DISABLE)
-	{
-		$this->cacheMode = $mode;
-	}
-
-	/**
 	 * Constructor
 	 *
 	 * @param array $files
@@ -97,13 +89,18 @@ class Gettext extends Nette\Object implements IEditable
 	 */
 	public function __construct(Nette\Http\Session $session, Nette\Caching\Storages\FileStorage $cacheStorage, Nette\Http\Response $httpResponse)
 	{
-		$this->session = $storage = $session->getSection(static::SESSION_NAMESPACE);
-		$this->cache = new Nette\Caching\Cache($cacheStorage, static::SESSION_NAMESPACE);
+		$this->session = $storage = $session->getSection(self::SESSION_NAMESPACE);
+		$this->cache = new Nette\Caching\Cache($cacheStorage, self::SESSION_NAMESPACE);
 		$this->httpResponse = $httpResponse;
 
 		if (!isset($storage->newStrings) || !is_array($storage->newStrings)) {
 			$storage->newStrings = array();
 		}
+	}
+
+	public function enableCache($mode = self::CACHE_DISABLE)
+	{
+		$this->cacheMode = $mode;
 	}
 
 	/**
@@ -142,7 +139,7 @@ class Gettext extends Nette\Object implements IEditable
 			}
 
 			$cache = $this->cache;
-			if (static::$cacheMode && isset($cache['dictionary-' . $this->lang])) {
+			if ($this->cacheMode && isset($cache['dictionary-' . $this->lang])) {
 				$this->dictionary = $cache['dictionary-' . $this->lang];
 			} else {
 				$files = array();
@@ -154,7 +151,7 @@ class Gettext extends Nette\Object implements IEditable
 					}
 				}
 
-				if (static::$cacheMode) {
+				if ($this->cacheMode) {
 					$cache->save('dictionary-' . $this->lang, $this->dictionary, array('expire' => time() * 60 * 60 * 2, 'files' => $files, 'tags' => array('dictionary-' . $this->lang)));
 				}
 			}
@@ -431,7 +428,7 @@ class Gettext extends Nette\Object implements IEditable
 		if (isset($storage->newStrings[$this->lang])) {
 			unset($storage->newStrings[$this->lang]);
 		}
-		if (static::$cacheMode) {
+		if ($this->cacheMode) {
 			$cache = $this->cache->clean(array(\Nette\Caching\Cache::TAGS => 'dictionary-' . $this->lang));
 		}
 	}
