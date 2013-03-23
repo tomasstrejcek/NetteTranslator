@@ -74,6 +74,9 @@ class Gettext extends Nette\Object implements IEditable
 	/** @var Nette\Http\Session */
 	protected $session;
 
+    /** @var Nette\Http\SessionSection */
+    protected $sessionSection;
+
 	/** @var Nette\Caching\Cache */
 	protected $cache;
 
@@ -89,7 +92,8 @@ class Gettext extends Nette\Object implements IEditable
 	 */
 	public function __construct(Nette\Http\Session $session, Nette\Caching\Storages\FileStorage $cacheStorage, Nette\Http\Response $httpResponse)
 	{
-		$this->session = $storage = $session->getSection(self::SESSION_NAMESPACE);
+		$this->session = $session;
+        $this->sessionSection = $storage = $session->getSection(self::SESSION_NAMESPACE);
 		$this->cache = new Nette\Caching\Cache($cacheStorage, self::SESSION_NAMESPACE);
 		$this->httpResponse = $httpResponse;
 
@@ -277,7 +281,7 @@ class Gettext extends Nette\Object implements IEditable
 			}
 		} else {
 			if (!$this->httpResponse->isSent() || $this->session->isStarted()) {
-				$space = $this->session;
+				$space = $this->sessionSection;
 				if (!isset($space->newStrings[$this->lang])) {
 					$space->newStrings[$this->lang] = array();
 				}
@@ -340,7 +344,7 @@ class Gettext extends Nette\Object implements IEditable
 		$newStrings = array();
 		$result = array();
 
-		$storage = $this->session;
+		$storage = $this->sessionSection;
 		if (isset($storage->newStrings[$this->lang])) {
 			foreach (array_keys($storage->newStrings[$this->lang]) as $original) {
 				if (trim($original) != "") {
@@ -395,7 +399,7 @@ class Gettext extends Nette\Object implements IEditable
 	{
 		$this->loadDictonary();
 
-		$space = $this->session;
+		$space = $this->sessionSection;
 		if (isset($space->newStrings[$this->lang]) && array_key_exists($message, $space->newStrings[$this->lang])) {
 			$message = $space->newStrings[$this->lang][$message];
 		}
@@ -424,7 +428,7 @@ class Gettext extends Nette\Object implements IEditable
 		$this->buildMOFile("$path.mo", $file);
 		$this->buildPOFile("$path.po", $file);
 
-		$storage = $this->session;
+		$storage = $this->sessionSection;
 		if (isset($storage->newStrings[$this->lang])) {
 			unset($storage->newStrings[$this->lang]);
 		}
@@ -533,7 +537,7 @@ class Gettext extends Nette\Object implements IEditable
 			$po .= "\n";
 		}
 
-		$storage = $this->session;
+		$storage = $this->sessionSection;
 		if (isset($storage->newStrings[$this->lang])) {
 			foreach ($storage->newStrings[$this->lang] as $original) {
 				if (trim(current($original)) != "" && !\array_key_exists(current($original), $this->dictionary)) {
