@@ -74,8 +74,8 @@ class Gettext extends Nette\Object implements IEditable
 	/** @var Nette\Http\Session */
 	protected $session;
 
-    /** @var Nette\Http\SessionSection */
-    protected $sessionSection;
+	/** @var Nette\Http\SessionSection */
+	protected $sessionSection;
 
 	/** @var Nette\Caching\Cache */
 	protected $cache;
@@ -93,7 +93,7 @@ class Gettext extends Nette\Object implements IEditable
 	public function __construct(Nette\Http\Session $session, Nette\Caching\Storages\FileStorage $cacheStorage, Nette\Http\Response $httpResponse)
 	{
 		$this->session = $session;
-        $this->sessionSection = $storage = $session->getSection(self::SESSION_NAMESPACE);
+		$this->sessionSection = $storage = $session->getSection(self::SESSION_NAMESPACE);
 		$this->cache = new Nette\Caching\Cache($cacheStorage, self::SESSION_NAMESPACE);
 		$this->httpResponse = $httpResponse;
 
